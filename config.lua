@@ -14,6 +14,7 @@ lvim.leader = "space"
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
 lvim.builtin.dashboard.active = true
 lvim.builtin.terminal.active = true
+lvim.builtin.notify.active = true
 
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = "maintained"
@@ -59,26 +60,32 @@ vnoremap <leader>d "_d
 
 ]])
 
--- vim.api.nvim_set_keymap("n", "<TAB>", ":bnext<CR>", { noremap = true, silent = true })
--- vim.api.nvim_set_keymap("n", "<S-TAB>", ":bprevious<CR>", { noremap = true, silent = true })
+vim.list_extend(lvim.lsp.override, { "solargraph" })
 
--- if you just want to augment the existing ones then use the utility function
--- require("lv-utils").add_keymap_insert_mode({ silent = true }, {
--- { "<C-s>", ":w<cr>" },
--- { "<C-c>", "<ESC>" },
--- })
--- you can also use the native vim way directly
--- vim.api.nvim_set_keymap("i", "<C-Space>", "compe#complete()", { noremap = true, silent = true, expr = true })
+local util = require("lspconfig/util")
+local opts = {
+    cmd = { "solargraph", "stdio" },
+    filetypes = { "ruby" },
+    init_options = {
+      formatting = true
+    },
+    root_dir = util.root_pattern("Gemfile", ".git"),
+    settings = {
+      solargraph = {
+        diagnostics = true
+      }
+    }
+}
+ -- require("lvim.lsp.manager").setup("solargraph", opts)
+ require("lspconfig")["solargraph"].setup(opts)
+
 
 lvim.plugins = {
-  -- {"tpope/vim-rake"},
-  -- { "tpope/vim-fugitive" },
   { "tpope/vim-rails" },
   { "mileszs/ack.vim" },
   { "ggandor/lightspeed.nvim" },
   { "mg979/vim-visual-multi" },
   { "tpope/vim-capslock" },
-  { "wfleming/vim-codeclimate" },
   { "lourenci/github-colors" },
   { "ChristianChiarulli/nvcode-color-schemes.vim" },
   { "folke/tokyonight.nvim" },
