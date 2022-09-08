@@ -20,6 +20,8 @@ lvim.keys.normal_mode["<leader>tn"] = { ":TestNearest<CR>", { silent = true } }
 lvim.keys.normal_mode["<leader>ta"] = { ":TestSuite<CR>", { silent = true } }
 lvim.keys.normal_mode["<leader>tl"] = { ":TestLast<CR>", { silent = true } }
 lvim.keys.normal_mode["<leader>o"] = { ":Twilight<CR>", { silent = true } }
+lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
+lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
 -- lvim.keys.insert_mode["<C-A>"] = { "<buffer> <expr> <C-R> registers#peek('<C-R>')", { silent = true } }
 -- lvim.keys.normal_mode["s"] = { ":HopWord<cr>", { silent = true} }
 
@@ -138,7 +140,7 @@ set shell=/bin/bash
 
 
 lvim.plugins = {
-  -- { "tpope/vim-rails" },
+  { "tpope/vim-rails" },
   -- { "tpope/vim-capslock" },
   { "mg979/vim-visual-multi" },
   { "folke/twilight.nvim" },
