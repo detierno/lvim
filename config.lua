@@ -1,4 +1,4 @@
-lvim.log.level = "warn"
+-- lvim.log.level = "warn"
 
 lvim.format_on_save = false
 lvim.lint_on_save = false
@@ -36,7 +36,8 @@ lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
 
 -- lvim.colorscheme = "tokyonight"
 -- lvim.colorscheme = "catppuccin"
-lvim.colorscheme = "nightfly"
+-- lvim.colorscheme = "nightfly"
+lvim.colorscheme = "catppuccin-latte"
 
 -- Change Telescope navigation to use j and k for navigation and n and p for history in both input and normal mode.
 -- we use protected-mode (pcall) just in case the plugin wasn't loaded yet.
@@ -56,25 +57,9 @@ lvim.builtin.telescope.defaults.mappings = {
   },
 }
 
-vim.cmd([[
- " swap : with ;
-nnoremap ; ;
-nnoremap : ;
-vnoremap ; :
-vnoremap : ;
-noremap : ;
-noremap ; :
-" delete without yanking
-nnoremap <leader>d "_d
-vnoremap <leader>d "_d
-let test#strategy = 'neovim'
-let test#neovim#term_position = "vert botright 100"
-imap <buffer> <expr> <C-A> registers#peek('<C-R>')
+vim.opt.shell = "/bin/sh"
 
-set shell=/bin/bash
-]])
-
--- TREESITTER
+-- -- TREESITTER
 
 lvim.builtin.treesitter.ensure_installed = {
   "bash",
@@ -92,40 +77,50 @@ lvim.builtin.treesitter.ensure_installed = {
 }
 
 lvim.builtin.treesitter.ignore_install = { "haskell" }
-lvim.builtin.treesitter.highlight.enabled = true
+lvim.builtin.treesitter.highlight.enabled = false
 
-lvim.lsp.diagnostics.virtual_text = false
+vim.diagnostic.config({virtual_text = false})
 
 lvim.plugins = {
-  -- {
-  --   "zbirenbaum/copilot.lua",
-  --   event = { "VimEnter" },
-  --   config = function()
-  --     vim.defer_fn(function()
-  --       require("copilot").setup {
-  --         plugin_manager_path = get_runtime_dir() .. "/site/pack/packer",
-  --       }
-  --     end, 100)
-  --   end,
-  -- },
-
-  -- { "zbirenbaum/copilot-cmp",
-  --   after = { "copilot.lua", "nvim-cmp" },
-  -- },
-
   {
     'mrjones2014/dash.nvim',
-    run = 'make install',
+    build = 'make install',
   },
 
-  { "tpope/vim-rails" },
-  { "mg979/vim-visual-multi" },
+  {
+    "tpope/vim-rails",
+    cmd = {
+      "Eview",
+      "Econtroller",
+      "Emodel",
+      "Smodel",
+      "Sview",
+      "Scontroller",
+      "Vmodel",
+      "Vview",
+      "Vcontroller",
+      "Tmodel",
+      "Tview",
+      "Tcontroller",
+      "Rails",
+      "Generate",
+      "Runner",
+      "Extract"
+    }
+  },
+
+
+  -- { "mg979/vim-visual-multi" },
   { "folke/twilight.nvim" },
+  {
+    'f-person/auto-dark-mode.nvim'
+  },
   { 'bluz71/vim-nightfly-guicolors' },
   { 'tyrannicaltoucan/vim-deep-space' },
+  { 'projekt0n/github-nvim-theme' },
   { 
     "catppuccin/nvim",
-    as = "catppuccin",
+    name = "catppuccin",
     config = function()
       vim.g.catppuccin_flavour = "macchiato" -- latte, frappe, macchiato, mocha
       require("catppuccin").setup()
@@ -146,14 +141,20 @@ lvim.plugins = {
   { 'sonph/onehalf', rtp = 'vim' },
   -- { 'NLKNguyen/papercolor-theme' },
   -- { 'altercation/vim-colors-solarized' },
-  { 'numkil/ag.nvim' },
-  {
-    "ray-x/lsp_signature.nvim",
-    config = function()
-      require("lsp_signature").on_attach()
-    end,
-    event = "InsertEnter",
-  },
+  -- { 'numkil/ag.nvim' },
+  -- {
+  --   'suketa/nvim-dap-ruby',
+  --   config = function()
+  --     require('dap-ruby').setup()
+  --   end
+  -- },
+  -- {
+  --   "ray-x/lsp_signature.nvim",
+  --   config = function()
+  --     require("lsp_signature").on_attach()
+  --   end,
+  --   event = "InsertEnter",
+  -- },
 
   {
     "kevinhwang91/nvim-bqf",
@@ -211,12 +212,11 @@ lvim.plugins = {
         },
       }
     end,
-    requires = "nvim-lua/plenary.nvim",
+    dependencies = "nvim-lua/plenary.nvim",
   }
 }
 
--- lvim.builtin.cmp.formatting.source_names["copilot"] = "(Copilot)"
--- table.insert(lvim.builtin.cmp.sources, 1, { name = "Copilot" })
+
 -- generic LSP settings
 
 -- ---@usage disable automatic installation of servers
@@ -283,3 +283,49 @@ lvim.plugins = {
 -- lvim.autocommands.custom_groups = {
 --   { "BufWinEnter", "*.lua", "setlocal ts=8 sw=8" },
 -- }
+
+lvim.builtin.cmp.cmdline.enable = true
+
+-- lvim.builtin.cmp.formatting.source_names["copilot"] = "(Copilot)"
+-- table.insert(lvim.builtin.cmp.sources, 1, { name = "Copilot", group_index = 2 })
+table.insert(lvim.plugins, {
+  "zbirenbaum/copilot-cmp",
+  event = "InsertEnter",
+  dependencies = { "zbirenbaum/copilot.lua" },
+  config = function()
+    vim.defer_fn(function()
+      require("copilot").setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
+      require("copilot_cmp").setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
+    end, 100)
+  end,
+})
+
+local auto_dark_mode = require('auto-dark-mode')
+
+auto_dark_mode.setup({
+	update_interval = 1000,
+	set_dark_mode = function()
+		vim.api.nvim_set_option('background', 'dark')
+		vim.cmd('colorscheme nightfly')
+	end,
+	set_light_mode = function()
+		vim.api.nvim_set_option('background', 'light')
+		vim.cmd('colorscheme catppuccin-latte')
+	end,
+})
+auto_dark_mode.init()
+--
+vim.cmd([[
+ " swap : with ;
+nnoremap ; ;
+nnoremap : ;
+vnoremap ; :
+vnoremap : ;
+noremap : ;
+noremap ; :
+" delete without yanking
+nnoremap <leader>d "_d
+vnoremap <leader>d "_d
+let test#strategy = 'neovim'
+let test#neovim#term_position = "vert botright 100"
+]])
